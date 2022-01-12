@@ -1,6 +1,6 @@
 from django.shortcuts import render
 from django.contrib import messages
-from django.http import HttpResponseRedirect
+from django.http import HttpResponseRedirect, HttpResponse
 
 from django.views.generic import ListView
 from django.views.generic.edit import CreateView, DeleteView, UpdateView
@@ -53,13 +53,15 @@ class TransactionCreate(CreateView):
         new_points = int(request.POST.get("points"))
         payer_id = request.POST.get("payer")
         payer = self.payers.get(id=payer_id)
-        payer.total_points = payer.total_points + new_points
+        new_payer_total = payer.total_points + new_points
 
         # checks if payer has enough points
-        if payer.total_points < 0:
-            messages.error(request, "Not enough points")
+        if new_payer_total < 0:
+            text = "Not enough points. " + str(payer.name) +" only has " + str(payer.total_points) + " available."
+            messages.error(request, text)
             return HttpResponseRedirect('/transaction/create')
 
+        payer.total_points = new_payer_total
         payer.save()
         self.object = None
         return super().post(request, *args, **kwargs)

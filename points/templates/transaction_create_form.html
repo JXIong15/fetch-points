@@ -5,6 +5,17 @@
   <form method="post">
   <div>
     {% csrf_token %} {{ form.as_p }}
+
+      {% if messages %}
+        <ul class="messages">
+            {% for message in messages %}
+                <div class ="alert alert-danger m-2" id="msg" roles="alert" style="color:red">
+                    {{ message }}
+                </div>
+            {% endfor %}
+        </ul>
+      {% endif %}
+
     <input class="btn" type="submit" value="Submit" />
   </div>
   </form>
