@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+{% load static %}
+<link rel="stylesheet" href="{% static 'css/style.css' %}">
+<title>Django Transactions</title>
+</head>
+<body>
+
+<div class="header">
+  <div>
+    <a href="{% url 'index' %}">
+      <h2>Django Transactions</h2>
+    </a>
+    {% comment %} <a href="{% url 'postcreate' %}">
+      <button class="btn">Create Post</button>
+    </a> {% endcomment %}
+  </div>
+</div>
+{% block content %}
+{% endblock %}
+
+</body>
+</html>
