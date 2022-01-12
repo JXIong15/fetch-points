@@ -5,6 +5,10 @@ from .models import Payer, Transaction
 from .forms import PayerCreateForm, PayerUpdateForm, TransactionCreateForm
 
 
+def index(request):
+    return render(request, 'index.html')
+
+
 class PayerListView(ListView):
     model = Payer
     
