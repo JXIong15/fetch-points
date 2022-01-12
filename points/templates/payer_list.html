@@ -6,13 +6,11 @@
       <a href="{% url 'payercreate' %}">
           <button class="btn">Add Payer</button>
       </a>
-    {% if payers %}
-      {% for payer in payers %}
+    {% if payer_list %}
+      {% for payer in payer_list %}
       <div class="card">
-        <a style="text-decoration: none; color: black;" href="/payer/{{payer.id}}">
           <h2>{{payer.name}}</h2>
-          <h5>{{payer.total_points}}</h5>
-        </a>
+          <h5>Total Points: {{payer.total_points}}</h5>
       </div>
       {% endfor %}
     {% else %}

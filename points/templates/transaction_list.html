@@ -1,0 +1,24 @@
+{% extends './base.html' %}
+
+{% block content %}
+<div class="row">
+  <div class="leftcolumn">
+      <a href="{% url 'transactioncreate' %}">
+          <button class="btn">Add Transaction</button>
+      </a>
+    {% if transaction_list %}
+      {% for transaction in transaction_list %}
+      <div class="card">
+          <h2>{{transaction.payer}}</h2>
+          <h5>Points: {{transaction.points}}</h5>
+          <h5>Timestamp: {{transaction.timestamp}}</h5>
+      </div>
+      {% endfor %}
+    {% else %}
+      <h3>No Transactions Exist.</h3>
+      <p>Add one using the button above</p>
+    {% endif %}
+  </div>
+</div>
+
+{% endblock %}

@@ -9,6 +9,7 @@ markdown = "*"
 django-filter = "*"
 environ = "*"
 django-environ = "*"
+datetime = "*"
 
 [dev-packages]
 
