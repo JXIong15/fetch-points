@@ -1,0 +1,21 @@
+{% extends './base.html' %}
+
+{% block content %}
+<div class="row">
+  <div class="leftcolumn">
+    {% if payers %}
+      {% for payer in payers %}
+      <div class="card">
+        <a style="text-decoration: none; color: black;" href="/payer/{{payer.id}}">
+          <h2>{{payer.name}}</h2>
+          <h5>{{payer.total_points}}</h5>
+        </a>
+      </div>
+      {% endfor %}
+    {% else %}
+      <h3>No Payers Exist.</h3>
+      <p>Add one using the button above</p>
+  </div>
+</div>
+
+{% endblock %}

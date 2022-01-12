@@ -11,7 +11,8 @@ def index(request):
 
 class PayerListView(ListView):
     model = Payer
-    
+    template_name = 'payer_list.html'
+
 
 class PayerCreate(CreateView):
     model = Payer
@@ -33,6 +34,7 @@ class PayerDelete(DeleteView):
 
 class TransactionListView(ListView):
     model = Transaction
+    template_name = 'transaction_list.html'
     queryset = Transaction.objects.all().order_by("timestamp")
     
 
