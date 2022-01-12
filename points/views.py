@@ -1,6 +1,10 @@
 from django.shortcuts import render
+from django.contrib import messages
+from django.http import HttpResponseRedirect
+
 from django.views.generic import ListView
 from django.views.generic.edit import CreateView, DeleteView, UpdateView
+
 from .models import Payer, Transaction
 from .forms import PayerCreateForm, PayerUpdateForm, TransactionCreateForm
 
@@ -20,16 +24,16 @@ class PayerCreate(CreateView):
     form_class = PayerCreateForm
     
     
-class PayerUpdate(UpdateView):
-  model = Payer
-  template_name = "payer_update_form.html"
-  form_class = PayerUpdateForm
+# class PayerUpdate(UpdateView):
+#   model = Payer
+#   template_name = "payer_update_form.html"
+#   form_class = PayerUpdateForm
 
 
 class PayerDelete(DeleteView):
   model = Payer
   template_name = "payer_delete_form.html"
-  success_url = "/"
+  success_url = "/payer"
   
 
 class TransactionListView(ListView):
@@ -42,9 +46,26 @@ class TransactionCreate(CreateView):
     model = Transaction
     template_name = 'transaction_create_form.html'
     form_class = TransactionCreateForm
+    payers = Payer.objects.all()
+
+    # calculates new player points
+    def post(self, request, *args, **kwargs):
+        new_points = int(request.POST.get("points"))
+        payer_id = request.POST.get("payer")
+        payer = self.payers.get(id=payer_id)
+        payer.total_points = payer.total_points + new_points
+
+        # checks if payer has enough points
+        if payer.total_points < 0:
+            messages.error(request, "Not enough points")
+            return HttpResponseRedirect('/transaction/create')
+
+        payer.save()
+        self.object = None
+        return super().post(request, *args, **kwargs)
     
     
 class TransactionDelete(DeleteView):
   model = Transaction
   template_name = "transaction_delete_form.html"
-  success_url = "/"
+  success_url = "/transaction"

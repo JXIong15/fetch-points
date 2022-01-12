@@ -12,6 +12,9 @@
           <h2>{{transaction.payer}}</h2>
           <h5>Points: {{transaction.points}}</h5>
           <h5>Timestamp: {{transaction.timestamp}}</h5>
+          <a href="{% url 'transactiondelete' transaction.id %}">
+              <button class="del-btn">Delete</button>
+          </a>
       </div>
       {% endfor %}
     {% else %}
