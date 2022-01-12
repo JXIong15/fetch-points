@@ -3,6 +3,9 @@
 {% block content %}
 <div class="row">
   <div class="leftcolumn">
+      <a href="{% url 'payercreate' %}">
+          <button class="btn">Add Payer</button>
+      </a>
     {% if payers %}
       {% for payer in payers %}
       <div class="card">
@@ -15,6 +18,7 @@
     {% else %}
       <h3>No Payers Exist.</h3>
       <p>Add one using the button above</p>
+    {% endif %}
   </div>
 </div>
 
