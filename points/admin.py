@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import Payer, Transaction
+from .models import Payer, Transaction, Spend
 
 
 class PayerAdmin(admin.ModelAdmin):
@@ -25,5 +25,13 @@ class TransactionAdmin(admin.ModelAdmin):
     ]
 
 
+class SpendAdmin(admin.ModelAdmin):
+    list_display = [
+        "id",
+        "points",
+    ]
+
+
 admin.site.register(Payer, PayerAdmin)
 admin.site.register(Transaction, TransactionAdmin)
+admin.site.register(Spend, SpendAdmin)

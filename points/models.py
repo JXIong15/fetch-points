@@ -23,3 +23,10 @@ class Transaction(models.Model):
 
     def get_absolute_url(self):
         return '/transaction'
+
+
+class Spend(models.Model):
+    points = models.PositiveIntegerField(default=0)
+
+    def get_absolute_url(self):
+        return '/payer'

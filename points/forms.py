@@ -1,5 +1,5 @@
 from django import forms
-from .models import Payer, Transaction
+from .models import Payer, Transaction, Spend
 
 
 class PayerCreateForm(forms.ModelForm):
@@ -18,3 +18,9 @@ class TransactionCreateForm(forms.ModelForm):
     class Meta:
         model = Transaction
         fields = ('payer', 'points', 'timestamp',)
+
+
+class SpendCreateForm(forms.ModelForm):
+    class Meta:
+        model = Spend
+        fields = ('points',)

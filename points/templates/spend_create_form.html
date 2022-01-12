@@ -1,0 +1,13 @@
+{% extends './base.html' %}
+{% block content %}
+<div class="form">
+  <h2>How much would you like to spend?</h2>
+  <form method="post">
+  <div>
+    {% csrf_token %} {{ form.as_p }}
+    <input class="btn" type="submit" value="Submit" />
+  </div>
+  </form>
+</div>
+
+{% endblock %}

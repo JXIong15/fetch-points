@@ -5,8 +5,8 @@ from django.http import HttpResponseRedirect, HttpResponse
 from django.views.generic import ListView
 from django.views.generic.edit import CreateView, DeleteView, UpdateView
 
-from .models import Payer, Transaction
-from .forms import PayerCreateForm, PayerUpdateForm, TransactionCreateForm
+from .models import Payer, Transaction, Spend
+from .forms import PayerCreateForm, PayerUpdateForm, TransactionCreateForm, SpendCreateForm
 
 
 def index(request):
@@ -71,3 +71,13 @@ class TransactionDelete(DeleteView):
   model = Transaction
   template_name = "transaction_delete_form.html"
   success_url = "/transaction"
+
+
+class SpendCreate(CreateView):
+    model = Spend
+    template_name = 'spend_create_form.html'
+    form_class = SpendCreateForm
+    payers = Payer.objects.all()
+    transactions = Transaction.objects.all()
+
+    # redirect to payers list
