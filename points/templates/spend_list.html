@@ -1,0 +1,23 @@
+{% extends './base.html' %}
+{% block content %}
+<div class="row">
+  <div class="leftcolumn">
+      <a href="{% url 'spendcreate' %}">
+          <button class="btn">Add Spend</button>
+      </a>
+    {% if spend_list %}
+      {% for spend in spend_list %}
+      <div class="card">
+{#          <h2>{{spend.payer}}</h2>#}
+{#          <h5>Points: {{transaction.points}}</h5>#}
+{#          <h5>Timestamp: {{transaction.timestamp}}</h5>#}
+      </div>
+      {% endfor %}
+    {% else %}
+      <h3>No Past Spending Exists.</h3>
+      <p>Add one using the button above</p>
+    {% endif %}
+  </div>
+</div>
+
+{% endblock %}

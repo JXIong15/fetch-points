@@ -29,4 +29,4 @@ class Spend(models.Model):
     points = models.PositiveIntegerField(default=0)
 
     def get_absolute_url(self):
-        return '/payer'
+        return '/spend'

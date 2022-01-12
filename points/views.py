@@ -1,12 +1,12 @@
 from django.shortcuts import render
 from django.contrib import messages
-from django.http import HttpResponseRedirect, HttpResponse
+from django.http import HttpResponseRedirect
 
 from django.views.generic import ListView
-from django.views.generic.edit import CreateView, DeleteView, UpdateView
+from django.views.generic.edit import CreateView, DeleteView
 
 from .models import Payer, Transaction, Spend
-from .forms import PayerCreateForm, PayerUpdateForm, TransactionCreateForm, SpendCreateForm
+from .forms import PayerCreateForm, TransactionCreateForm, SpendCreateForm
 
 
 def index(request):
@@ -22,12 +22,6 @@ class PayerCreate(CreateView):
     model = Payer
     template_name = 'payer_create_form.html'
     form_class = PayerCreateForm
-    
-    
-# class PayerUpdate(UpdateView):
-#   model = Payer
-#   template_name = "payer_update_form.html"
-#   form_class = PayerUpdateForm
 
 
 class PayerDelete(DeleteView):
@@ -67,38 +61,41 @@ class TransactionCreate(CreateView):
         return super().post(request, *args, **kwargs)
 
 
-# class TransactionDelete(DeleteView):
-#   model = Transaction
-#   template_name = "transaction_delete_form.html"
-#   success_url = "/transaction"
+class SpendListView(ListView):
+    model = Spend
+    template_name = 'spend_list.html'
+
+    # def get_queryset(self):
+    #     return
 
 
 class SpendCreate(CreateView):
     model = Spend
     template_name = 'spend_create_form.html'
     form_class = SpendCreateForm
-    payers = Payer.objects.all()
     transactions = Transaction.objects.all().order_by("timestamp")
 
     def post(self, request, *args, **kwargs):
         spending = int(request.POST.get("points"))
-
         total_transaction_points = sum(self.transactions.values_list("points", flat=True))
 
-        # checks to make sure we have enough spnnding power
+        # checks to make sure we have enough spending power
         if spending > total_transaction_points:
             text = "Not enough points. We only have " + str(total_transaction_points) + " available."
             messages.error(request, text)
             return HttpResponseRedirect('/spend/create')
 
         for transaction in self.transactions:
-            payer = self.payers.get(id=transaction.payer)
+            payer = transaction.payer
 
             if transaction.points <= spending:
                 spending -= transaction.points
                 payer.total_points -= transaction.points
+                transaction.delete()
             else:
                 payer.total_points -= spending
+                transaction.points -= spending
+                transaction.save()
                 spending = 0
 
             payer.save()
