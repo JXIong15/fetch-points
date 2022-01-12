@@ -78,6 +78,7 @@ class SpendCreate(CreateView):
     def post(self, request, *args, **kwargs):
         spending = int(request.POST.get("points"))
         total_transaction_points = sum(self.transactions.values_list("points", flat=True))
+        receipt = []
 
         # checks to make sure we have enough spending power
         if spending > total_transaction_points:
@@ -87,18 +88,30 @@ class SpendCreate(CreateView):
 
         for transaction in self.transactions:
             payer = transaction.payer
+            item = {
+                "payer": payer.name,
+                "points": None
+            }
 
             if transaction.points <= spending:
+                item.points = transaction.points
                 spending -= transaction.points
                 payer.total_points -= transaction.points
                 transaction.delete()
             else:
+                item['points'] = spending
                 payer.total_points -= spending
                 transaction.points -= spending
                 transaction.save()
                 spending = 0
 
+            receipt.append(item)
+
             payer.save()
+            request.receipt = receipt
+
+            if spending == 0:
+                break
 
         self.object = None
         return super().post(request, *args, **kwargs)
