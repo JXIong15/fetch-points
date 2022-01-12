@@ -1,0 +1,96 @@
+* {
+    box-sizing: border-box;
+  }
+  
+  body {
+    font-family: Arial;
+    padding: 20px;
+    background: #f1f1f1;
+  }
+  
+  .header {
+    padding: 2px;
+    font-size: 40px;
+    text-align: center;
+    background: white;
+    padding-bottom: 50px;
+  }
+
+  .logout-button {
+    background-color: rgb(240, 143, 143);
+    color: white;
+    text-decoration: none;
+    padding: 10px;
+    border-radius: 10px;
+    margin-left: 90%;
+    font-size: medium;
+  }
+  
+  h2 {
+    margin-bottom: 10px;
+  }
+  
+  a:visited {
+    color: black;
+  }
+  
+  .leftcolumn {   
+    float: left;
+    width: 100%;
+  }
+  
+  .card {
+     background-color: white;
+     padding: 20px;
+     margin-top: 20px;
+  }
+  
+  .row:after {
+    content: "";
+    display: table;
+    clear: both;
+  }
+  
+  .header-row {
+    display: flex;
+    justify-content: space-between;
+  }
+  
+  .btn-row {
+    display: flex;
+    justify-content: right;
+  }
+  
+  .btn {
+    margin-right: 5px;
+    background-color: blue;
+    padding: 10px;
+    color: white;
+    font-size: medium;
+    border-radius: 10px;
+  }
+  
+  .del-btn {
+    background-color: red;
+    padding: 10px;
+    color: white;
+    font-size: medium;
+    border-radius: 10px;
+  }
+  
+  .form {
+    text-align: center;
+    background-color: white;
+    padding: 20px;
+    margin-top: 20px;
+    border: solid;
+    border-color: gray;
+    border-radius: 15px;
+  }
+  
+  @media screen and (max-width: 800px) {
+    .leftcolumn, .rightcolumn {   
+      width: 100%;
+      padding: 0;
+    }
+  }

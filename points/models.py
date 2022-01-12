@@ -11,5 +11,5 @@ class Transaction(models.Model):
         'payer',
         on_delete=models.CASCADE
     )
-    points = models.PositiveIntegerField()
+    points = models.IntegerField()
     timestamp = models.DateTimeField()
