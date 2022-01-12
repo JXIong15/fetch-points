@@ -65,12 +65,12 @@ class TransactionCreate(CreateView):
         payer.save()
         self.object = None
         return super().post(request, *args, **kwargs)
-    
-    
-class TransactionDelete(DeleteView):
-  model = Transaction
-  template_name = "transaction_delete_form.html"
-  success_url = "/transaction"
+
+
+# class TransactionDelete(DeleteView):
+#   model = Transaction
+#   template_name = "transaction_delete_form.html"
+#   success_url = "/transaction"
 
 
 class SpendCreate(CreateView):
@@ -78,6 +78,32 @@ class SpendCreate(CreateView):
     template_name = 'spend_create_form.html'
     form_class = SpendCreateForm
     payers = Payer.objects.all()
-    transactions = Transaction.objects.all()
+    transactions = Transaction.objects.all().order_by("timestamp")
+
+    def post(self, request, *args, **kwargs):
+        spending = int(request.POST.get("points"))
+
+        total_transaction_points = sum(self.transactions.values_list("points", flat=True))
+
+        # checks to make sure we have enough spnnding power
+        if spending > total_transaction_points:
+            text = "Not enough points. We only have " + str(total_transaction_points) + " available."
+            messages.error(request, text)
+            return HttpResponseRedirect('/spend/create')
+
+        for transaction in self.transactions:
+            payer = self.payers.get(id=transaction.payer)
+
+            if transaction.points <= spending:
+                spending -= transaction.points
+                payer.total_points -= transaction.points
+            else:
+                payer.total_points -= spending
+                spending = 0
+
+            payer.save()
+
+        self.object = None
+        return super().post(request, *args, **kwargs)
 
     # redirect to payers list
