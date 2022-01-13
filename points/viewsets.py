@@ -28,10 +28,11 @@ class TransactionViewSet(viewsets.ModelViewSet):
         payer.total_points = new_payer_total
         payer.save()
 
-        if points > 0:
-            request.data["remaining_points"] = points
-        else:
-            request.data["remaining_points"] = 0
+        # if points > 0:
+        #     request.data["remaining_points"] = points
+        # else:
+        #     request.data["remaining_points"] = 0
+        request.data["remaining_points"] = points
 
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
@@ -57,24 +58,29 @@ class SpendViewSet(viewsets.ModelViewSet):
 
         for transaction in Transaction.objects.all().order_by("timestamp"):
             payer = transaction.payer
-            # NEED TO ACCOUNT FOR IF PAYER IS ALREADY IN RECEIPT
             r = {
                 "payer": payer.name,
                 "points": 0
             }
 
-            if transaction.remaining_points == 0:
-                continue
-            elif transaction.remaining_points <= spending:
-                r["points"] -= transaction.remaining_points
-                spending -= transaction.remaining_points
-                payer.total_points -= transaction.remaining_points
-                transaction.remaining_points = 0
-            else:
-                r['points'] -= spending
-                payer.total_points -= spending
-                transaction.remaining_points -= spending
-                spending = 0
+            # checks if player already exists in receipt
+            if len(receipt) is not 0:
+                for item in receipt:
+                    if item['payer'] == payer.name:
+                        r = item
+                        receipt.pop(receipt.index(item))
+
+            if transaction.remaining_points is not 0:
+                if transaction.remaining_points <= spending:
+                    r["points"] -= transaction.remaining_points
+                    spending -= transaction.remaining_points
+                    payer.total_points -= transaction.remaining_points
+                    transaction.remaining_points = 0
+                elif transaction.remaining_points > spending:
+                    r['points'] -= spending
+                    payer.total_points -= spending
+                    transaction.remaining_points -= spending
+                    spending = 0
 
             receipt.append(r)
             transaction.save()
@@ -83,8 +89,12 @@ class SpendViewSet(viewsets.ModelViewSet):
             if spending == 0:
                 break
 
-        request.data["receipt"] = receipt
+        # prevents positive values in receipt
+        for item in receipt:
+            if item['points'] >= 0:
+                receipt.pop(receipt.index(item))
 
+        request.data["receipt"] = receipt
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         self.perform_create(serializer)
