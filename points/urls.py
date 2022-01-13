@@ -1,4 +1,4 @@
-from django.urls import path, include
+from django.urls import path
 from . import views
 
 urlpatterns = [
@@ -6,10 +6,12 @@ urlpatterns = [
     
     path('payer', views.PayerListView.as_view(), name='payers'),
     path("payer/create", views.PayerCreate.as_view(), name="payercreate"),
-    # path("payer/update/<pk>", views.PayerUpdate.as_view(), name="payerupdate"),
     path("payer/delete/<pk>", views.PayerDelete.as_view(), name="payerdelete"),
     
     path('transaction', views.TransactionListView.as_view(), name='transactions'),
     path("transaction/create", views.TransactionCreate.as_view(), name="transactioncreate"),
-    path("transaction/delete/<pk>", views.TransactionDelete.as_view(), name="transactiondelete"),
+
+    path('spend', views.SpendListView.as_view(), name='spend'),
+    path("spend/create", views.SpendCreate.as_view(), name="spendcreate"),
+
 ]
