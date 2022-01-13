@@ -28,11 +28,7 @@ class Transaction(models.Model):
 
 class Spend(models.Model):
     points = models.PositiveIntegerField(default=0)
-    receipt = models.TextField(blank=True, null=True)
+    receipt = models.JSONField()
 
     def get_absolute_url(self):
         return '/spend'
-
-
-# class Receipt(models.Model):
-#     data = models.TextField(blank=True, null=True)
