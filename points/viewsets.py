@@ -89,7 +89,9 @@ class SpendViewSet(viewsets.ModelViewSet):
                     transaction.remaining_points -= spending
                     spending = 0
 
-            receipt.append(r)
+            if r['points'] is not 0:
+                receipt.append(r)
+
             transaction.save()
             payer.save()
 
@@ -98,7 +100,7 @@ class SpendViewSet(viewsets.ModelViewSet):
 
         # prevents positive values in receipt
         for item in receipt:
-            if item['points'] >= 0:
+            if item['points'] > 0 or item['points'] == 0:
                 receipt.pop(receipt.index(item))
 
         request.data["receipt"] = receipt
