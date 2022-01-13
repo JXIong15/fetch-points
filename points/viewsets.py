@@ -8,6 +8,18 @@ class PayerViewSet(viewsets.ModelViewSet):
     queryset = Payer.objects.all()
     serializer_class = PayerSerializer
 
+    def create(self, request, *args, **kwargs):
+        # need to find a better way to account for seeing if total_points is entered
+        if len(request.data) == 2:
+            if request.data['total_points'] < 0:
+                return Response("Payer Points cannot be negative.", status=status.HTTP_400_BAD_REQUEST)
+
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        self.perform_create(serializer)
+        headers = self.get_success_headers(serializer.data)
+        return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)
+
 
 class TransactionViewSet(viewsets.ModelViewSet):
     queryset = Transaction.objects.all().order_by("timestamp")

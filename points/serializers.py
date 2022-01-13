@@ -12,12 +12,11 @@ class PayerSerializer(serializers.ModelSerializer):
         ]
 
 
+
 class TransactionSerializer(serializers.ModelSerializer):
     class Meta:
         model = Transaction
-        fields = ['id', 'payer', 'points', 'timestamp',
-                  'remaining_points',
-                  ]
+        fields = ['id', 'payer', 'points', 'timestamp', 'remaining_points',]
 
 
 class SpendSerializer(serializers.ModelSerializer):
