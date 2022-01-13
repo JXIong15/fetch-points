@@ -75,45 +75,50 @@ class SpendCreate(CreateView):
     form_class = SpendCreateForm
     transactions = Transaction.objects.all().order_by("timestamp")
 
-    def post(self, request, *args, **kwargs):
-        spending = int(request.POST.get("points"))
-        total_transaction_points = sum(self.transactions.values_list("points", flat=True))
-        receipt = []
+    def form_valid(self, form):
+        response = super(SpendCreate, self).form_valid(form)
+        # do something with self.object
+        # create receipt to add to response
+        return response
 
-        # checks to make sure we have enough spending power
-        if spending > total_transaction_points:
-            text = "Not enough points. We only have " + str(total_transaction_points) + " available."
-            messages.error(request, text)
-            return HttpResponseRedirect('/spend/create')
-
-        for transaction in self.transactions:
-            payer = transaction.payer
-            item = {
-                "payer": payer.name,
-                "points": None
-            }
-
-            if transaction.points <= spending:
-                item["points"] = transaction.points
-                spending -= transaction.points
-                payer.total_points -= transaction.points
-                transaction.delete()
-            else:
-                item['points'] = spending
-                payer.total_points -= spending
-                transaction.points -= spending
-                transaction.save()
-                spending = 0
-
-            receipt.append(item)
-
-            payer.save()
-            # request.POST.set("receipt") = receipt
-
-            if spending == 0:
-                break
-
-        self.object = None
-        return super().post(request, *args, **kwargs)
-
-    # redirect to payers list
+    # def post(self, request, *args, **kwargs):
+    #     spending = int(request.POST.get("points"))
+    #     total_transaction_points = sum(self.transactions.values_list("points", flat=True))
+    #     receipt = []
+    #
+    #     # checks to make sure we have enough spending power
+    #     if spending > total_transaction_points:
+    #         text = "Not enough points. We only have " + str(total_transaction_points) + " available."
+    #         messages.error(request, text)
+    #         return HttpResponseRedirect('/spend/create')
+    #
+    #     for transaction in self.transactions:
+    #         payer = transaction.payer
+    #
+    #         item = {
+    #             "payer": payer.name,
+    #             "points": None
+    #         }
+    #
+    #         if transaction.points <= spending:
+    #             item["points"] = transaction.points
+    #             spending -= transaction.points
+    #             payer.total_points -= transaction.points
+    #             transaction.delete()
+    #         else:
+    #             item['points'] = spending
+    #             payer.total_points -= spending
+    #             transaction.points -= spending
+    #             transaction.save()
+    #             spending = 0
+    #
+    #         receipt.append(item)
+    #         payer.save()
+    #
+    #         if spending == 0:
+    #             break
+    #
+    #     # receipt.data = receipt
+    # receipt.save()
+    #     self.object = None
+    #     return super().post(request, *args, **kwargs)
