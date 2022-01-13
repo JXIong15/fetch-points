@@ -70,10 +70,10 @@ class SpendViewSet(viewsets.ModelViewSet):
                 r['points'] -= spending
                 payer.total_points -= spending
                 transaction.remaining_points -= spending
-                transaction.save()
                 spending = 0
 
             receipt.append(r)
+            transaction.save()
             payer.save()
 
             if spending == 0:
