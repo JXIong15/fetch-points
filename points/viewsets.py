@@ -28,12 +28,7 @@ class TransactionViewSet(viewsets.ModelViewSet):
         payer.total_points = new_payer_total
         payer.save()
 
-        # if points > 0:
-        #     request.data["remaining_points"] = points
-        # else:
-        #     request.data["remaining_points"] = 0
         request.data["remaining_points"] = points
-
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         self.perform_create(serializer)
