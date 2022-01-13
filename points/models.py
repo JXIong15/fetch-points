@@ -20,6 +20,7 @@ class Transaction(models.Model):
     )
     points = models.IntegerField()
     timestamp = models.DateTimeField(default=datetime.now)
+    remaining_points = models.IntegerField(default=0, blank=True, null=True)
 
     def get_absolute_url(self):
         return '/transaction'
@@ -27,7 +28,7 @@ class Transaction(models.Model):
 
 class Spend(models.Model):
     points = models.PositiveIntegerField(default=0)
-    receipt = models.TextField(null=True, blank=True)
+    receipt = models.JSONField()
 
     def get_absolute_url(self):
         return '/spend'
