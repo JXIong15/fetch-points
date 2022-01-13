@@ -27,7 +27,11 @@ class TransactionViewSet(viewsets.ModelViewSet):
 
         payer.total_points = new_payer_total
         payer.save()
-        request.data["remaining_points"] = points
+
+        if points > 0:
+            request.data["remaining_points"] = points
+        else:
+            request.data["remaining_points"] = 0
 
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
@@ -78,11 +82,6 @@ class SpendViewSet(viewsets.ModelViewSet):
 
             if spending == 0:
                 break
-
-        # check receipt. remove any positive values from it
-        for r in receipt:
-            if r["points"] > 0:
-                receipt.pop(receipt.index(r))
 
         request.data["receipt"] = receipt
 
