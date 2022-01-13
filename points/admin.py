@@ -21,7 +21,8 @@ class TransactionAdmin(admin.ModelAdmin):
         "id",
         "payer",
         'points',
-        'timestamp'
+        'timestamp',
+        'remaining_points'
     ]
 
 

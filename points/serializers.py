@@ -16,7 +16,7 @@ class TransactionSerializer(serializers.ModelSerializer):
     class Meta:
         model = Transaction
         fields = ['id', 'payer', 'points', 'timestamp',
-                  # 'remaining_points',
+                  'remaining_points',
                   ]
 
 

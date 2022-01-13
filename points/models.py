@@ -20,7 +20,7 @@ class Transaction(models.Model):
     )
     points = models.IntegerField()
     timestamp = models.DateTimeField(default=datetime.now)
-    # remaining_points = models.IntegerField(default=0, blank=True, null=True)
+    remaining_points = models.IntegerField(default=0, blank=True, null=True)
 
     def get_absolute_url(self):
         return '/transaction'
