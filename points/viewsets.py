@@ -10,7 +10,7 @@ class PayerViewSet(viewsets.ModelViewSet):
 
 
 class TransactionViewSet(viewsets.ModelViewSet):
-    queryset = Transaction.objects.all()
+    queryset = Transaction.objects.all().order_by("timestamp")
     serializer_class = TransactionSerializer
 
     # customize POST to add 'remaining_points' field
@@ -51,7 +51,7 @@ class SpendViewSet(viewsets.ModelViewSet):
             text = "Not enough points. We only have " + str(total_transaction_points) + " available."
             return Response(text, status=status.HTTP_400_BAD_REQUEST)
 
-        for transaction in Transaction.objects.all():
+        for transaction in Transaction.objects.all().order_by("timestamp"):
             payer = transaction.payer
             # NEED TO ACCOUNT FOR IF PAYER IS ALREADY IN RECEIPT
             r = {
@@ -60,7 +60,7 @@ class SpendViewSet(viewsets.ModelViewSet):
             }
 
             if transaction.remaining_points == 0:
-                break
+                continue
             elif transaction.remaining_points <= spending:
                 r["points"] -= transaction.remaining_points
                 spending -= transaction.remaining_points
@@ -80,6 +80,9 @@ class SpendViewSet(viewsets.ModelViewSet):
                 break
 
         # check receipt. remove any positive values from it
+        for r in receipt:
+            if r["points"] > 0:
+                receipt.pop(receipt.index(r))
 
         request.data["receipt"] = receipt
 
