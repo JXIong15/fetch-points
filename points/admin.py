@@ -29,6 +29,7 @@ class SpendAdmin(admin.ModelAdmin):
     list_display = [
         "id",
         "points",
+        "receipt"
     ]
 
 

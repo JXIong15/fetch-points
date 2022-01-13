@@ -94,7 +94,7 @@ class SpendCreate(CreateView):
             }
 
             if transaction.points <= spending:
-                item.points = transaction.points
+                item["points"] = transaction.points
                 spending -= transaction.points
                 payer.total_points -= transaction.points
                 transaction.delete()
@@ -108,7 +108,7 @@ class SpendCreate(CreateView):
             receipt.append(item)
 
             payer.save()
-            request.receipt = receipt
+            # request.POST.set("receipt") = receipt
 
             if spending == 0:
                 break
