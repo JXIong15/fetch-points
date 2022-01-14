@@ -6,6 +6,40 @@ client = APIClient()
 root = "http://localhost:8000/"
 
 
+class TestBalance(TestCase):
+    def test_no_payers(self):
+        resp = client.get(f'{root}balance/')
+        self.assertEqual(resp.status_code, 200)
+        self.assertEqual(resp.data, {})
+
+    def test_with_payers(self):
+        Payer.objects.create(name='Ash', total_points=100)
+        Payer.objects.create(name='Misty')
+        resp = client.get(f'{root}balance/')
+        self.assertEqual(resp.status_code, 200)
+        self.assertEqual(resp.data, {'Ash': 100, 'Misty': 0})
+
+    def test_after_spend(self):
+        payer_data = {"name": "Ash"}
+        payer = client.post(f'{root}payer/', data=payer_data, format='json')
+        payer_data = {"name": "Misty"}
+        client.post(f'{root}payer/', data=payer_data, format='json')
+
+        transaction_data = {
+            "payer": payer.data['id'],
+            "points": 100,
+            "timestamp": "2022-11-07T14:03:17Z"
+        }
+        client.post(f'{root}transaction/', data=transaction_data, format='json')
+
+        spend_data = {"points": 20}
+        client.post(f'{root}spend/', data=spend_data, format='json')
+
+        resp = client.get(f'{root}balance/')
+        self.assertEqual(resp.status_code, 200)
+        self.assertEqual(resp.data, {'Ash': 80, 'Misty': 0})
+
+
 class TestPayerCreate(TestCase):
     def test_no_points(self):
         payer_data = {"name": "Ash"}
