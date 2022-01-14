@@ -23,4 +23,3 @@ class Transaction(models.Model):
 class Spend(models.Model):
     points = models.PositiveIntegerField(default=0)
     receipt = models.JSONField()
-
