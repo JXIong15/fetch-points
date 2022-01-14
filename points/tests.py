@@ -143,4 +143,92 @@ class TestTransaction(TestCase):
 
 
 class TestSpend(TestCase):
-    pass
+    def setUp(self):
+        self.payer1 = client.post(f'{root}payer/', data={"name": "Ash"}, format='json')
+        self.payer2 = client.post(f'{root}payer/', data={"name": "Misty"}, format='json')
+
+        transaction_data = {
+            "payer": self.payer1.data['id'],
+            "points": 100,
+            "timestamp": "2022-11-07T14:03:17Z"
+        }
+        client.post(f'{root}transaction/', data=transaction_data, format='json')
+
+    def test_normal_spend(self):
+        spend_data = {"points": 20}
+        resp = client.post(f'{root}spend/', data=spend_data, format='json')
+        self.assertEqual(resp.status_code, 201)
+        self.assertEqual(resp.data, [{'payer': 'Ash', 'points': -20}])
+
+    def test_not_enough_spend(self):
+        spend_data = {"points": 200}
+        resp = client.post(f'{root}spend/', data=spend_data, format='json')
+        self.assertEqual(resp.status_code, 400)
+        text = f"Not enough points. We only have 100 available."
+        self.assertEqual(resp.json(), text)
+
+    def test_spend_oldest_points_first(self):
+        transaction_data = {
+            "payer": self.payer2.data['id'],
+            "points": 50,
+            "timestamp": "2022-10-07T14:03:17Z"
+        }
+        client.post(f'{root}transaction/', data=transaction_data, format='json')
+        resp = client.get(f'{root}transaction/', format='json')
+        self.assertEqual(resp.status_code, 200)
+        # transactions are ordered by oldest timestamp
+        self.assertTrue(resp.data[0]['timestamp'] < resp.data[1]['timestamp'])
+
+        spend_data = {"points": 75}
+        resp = client.post(f'{root}spend/', data=spend_data, format='json')
+        self.assertEqual(resp.status_code, 201)
+        self.assertEqual(resp.data, [
+            {'payer': 'Misty', 'points': -50},
+            {'payer': 'Ash', 'points': -25}
+        ])
+        payer1 = Payer.objects.get(id=self.payer1.data['id'])
+        payer2 = Payer.objects.get(id=self.payer2.data['id'])
+        self.assertEqual(payer1.total_points, 75)
+        self.assertEqual(payer2.total_points, 0)
+
+    def test_multiple_transactions_spent(self):
+        transaction_data = {
+            "payer": self.payer2.data['id'],
+            "points": 25,
+            "timestamp": "2022-09-07T14:03:17Z"
+        }
+        client.post(f'{root}transaction/', data=transaction_data, format='json')
+        transaction_data = {
+            "payer": self.payer2.data['id'],
+            "points": -20,
+            "timestamp": "2022-10-07T14:03:17Z"
+        }
+        client.post(f'{root}transaction/', data=transaction_data, format='json')
+        transaction_data = {
+            "payer": self.payer1.data['id'],
+            "points": 5,
+            "timestamp": "2022-09-17T14:03:17Z"
+        }
+        client.post(f'{root}transaction/', data=transaction_data, format='json')
+        client.get(f'{root}transaction/', format='json')
+
+        # At this point: {Misty: 5, Ash: 105}
+        spend_data = {"points": 75}
+        resp = client.post(f'{root}spend/', data=spend_data, format='json')
+        # Based on Transaction order, Misty's first transaction of 25 will be spent
+        # {Misty: -20, Ash: 105, Spend: 50}
+        # Next, Ash's 5 will be spent: {Misty: -20, Ash: 100, Spend: 45}
+        # Misty's -20 transaction is next, meaning she and the spending power increase by 20,
+        # which leaves her total_points at 0: {Misty: 0, Ash: 100, Spend: 65}
+        # Finally, the remainder is partially pulled from Ash's initial 100 transaction in the setup
+        # {Misty: 0, Ash: 35, Spend: 0}
+        # From a Spend of 75, the Receipt: {Misty: -5, Ash: -70}
+        self.assertEqual(resp.status_code, 201)
+        self.assertEqual(resp.data, [
+            {'payer': 'Misty', 'points': -5},
+            {'payer': 'Ash', 'points': -70}
+        ])
+        payer1 = Payer.objects.get(id=self.payer1.data['id'])
+        payer2 = Payer.objects.get(id=self.payer2.data['id'])
+        self.assertEqual(payer1.total_points, 35)
+        self.assertEqual(payer2.total_points, 0)
