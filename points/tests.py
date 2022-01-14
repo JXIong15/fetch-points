@@ -49,6 +49,7 @@ class TestTransaction(TestCase):
         self.assertEqual(resp.status_code, 201)
         self.assertEqual(resp.data['payer'], 1)
         self.assertEqual(resp.data['points'], 100)
+        self.assertEqual(resp.data['remaining_points'], resp.data['points'])
         self.assertEqual(resp.data['timestamp'], "2022-11-07T14:03:17Z")
 
         # points added to user
@@ -106,3 +107,4 @@ class TestTransaction(TestCase):
         payer = Payer.objects.get(id=payer_id)
         text = f"Not enough points. {payer.name} only has {payer.total_points} points available."
         self.assertEqual(resp.data, text)
+        self.assertEqual(payer.total_points, 0)
