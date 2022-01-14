@@ -10,6 +10,7 @@ django-filter = "*"
 environ = "*"
 django-environ = "*"
 datetime = "*"
+requests = "*"
 
 [dev-packages]
 
