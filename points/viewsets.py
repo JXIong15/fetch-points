@@ -11,7 +11,7 @@ class PayerViewSet(viewsets.ModelViewSet):
     def create(self, request, *args, **kwargs):
         # need to find a better way to account for seeing if total_points is entered
         if len(request.data) == 2:
-            if request.data['total_points'] < 0:
+            if int(request.data['total_points']) < 0:
                 return Response("Payer Points cannot be negative.", status=status.HTTP_400_BAD_REQUEST)
 
         serializer = self.get_serializer(data=request.data)
@@ -71,13 +71,13 @@ class SpendViewSet(viewsets.ModelViewSet):
             }
 
             # checks if player already exists in receipt
-            if len(receipt) is not 0:
+            if len(receipt) != 0:
                 for item in receipt:
                     if item['payer'] == payer.name:
                         r = item
                         receipt.pop(receipt.index(item))
 
-            if transaction.remaining_points is not 0:
+            if transaction.remaining_points != 0:
                 if transaction.remaining_points <= spending:
                     r["points"] -= transaction.remaining_points
                     spending -= transaction.remaining_points
@@ -89,7 +89,7 @@ class SpendViewSet(viewsets.ModelViewSet):
                     transaction.remaining_points -= spending
                     spending = 0
 
-            if r['points'] is not 0:
+            if r['points'] != 0:
                 receipt.append(r)
 
             transaction.save()
