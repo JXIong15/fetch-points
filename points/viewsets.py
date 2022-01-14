@@ -11,7 +11,7 @@ class PayerViewSet(viewsets.ModelViewSet):
     def create(self, request, *args, **kwargs):
         # need to find a better way to account for seeing if total_points is entered
         if len(request.data) == 2:
-            if int(request.data['total_points']) < 0:
+            if request.data['total_points'] < 0:
                 return Response("Payer Points cannot be negative.", status=status.HTTP_400_BAD_REQUEST)
 
         serializer = self.get_serializer(data=request.data)
@@ -29,7 +29,7 @@ class TransactionViewSet(viewsets.ModelViewSet):
     def create(self, request, *args, **kwargs):
         payer_id = request.data.get("payer")
         payer = Payer.objects.get(id=payer_id)
-        points = request.data.get("points")
+        points = int(request.data.get("points"))
         new_payer_total = payer.total_points + points
 
         # checks if payer has enough points
