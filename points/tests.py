@@ -1,8 +1,6 @@
 from django.test import TestCase
-import unittest
 from rest_framework.test import APIClient
 from .models import Payer, Transaction, Spend
-from .serializers import PayerSerializer, TransactionSerializer, SpendSerializer
 
 client = APIClient()
 root = "http://localhost:8000/"
@@ -108,3 +106,7 @@ class TestTransaction(TestCase):
         text = f"Not enough points. {payer.name} only has {payer.total_points} points available."
         self.assertEqual(resp.data, text)
         self.assertEqual(payer.total_points, 0)
+
+
+class TestSpend(TestCase):
+    pass

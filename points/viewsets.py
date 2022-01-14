@@ -8,6 +8,8 @@ class PayerViewSet(viewsets.ModelViewSet):
     queryset = Payer.objects.all()
     serializer_class = PayerSerializer
 
+    # POINTS BALANCE LIST (new model)?
+
     def create(self, request, *args, **kwargs):
         if len(request.data) == 2:
             if request.data['total_points'] < 0:
@@ -107,4 +109,6 @@ class SpendViewSet(viewsets.ModelViewSet):
         serializer.is_valid(raise_exception=True)
         self.perform_create(serializer)
         headers = self.get_success_headers(serializer.data)
-        return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)
+
+        # check this RETURNS RECEIPT
+        return Response(serializer.data['receipt'], status=status.HTTP_201_CREATED, headers=headers)
