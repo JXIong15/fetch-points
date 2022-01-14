@@ -8,6 +8,19 @@ class PayerViewSet(viewsets.ModelViewSet):
     queryset = Payer.objects.all()
     serializer_class = PayerSerializer
 
+    # POINTS BALANCE LIST (new model)?
+
+    def create(self, request, *args, **kwargs):
+        if len(request.data) == 2:
+            if request.data['total_points'] < 0:
+                return Response("Payer Points cannot be negative.", status=status.HTTP_400_BAD_REQUEST)
+
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        self.perform_create(serializer)
+        headers = self.get_success_headers(serializer.data)
+        return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)
+
 
 class TransactionViewSet(viewsets.ModelViewSet):
     queryset = Transaction.objects.all().order_by("timestamp")
@@ -17,12 +30,12 @@ class TransactionViewSet(viewsets.ModelViewSet):
     def create(self, request, *args, **kwargs):
         payer_id = request.data.get("payer")
         payer = Payer.objects.get(id=payer_id)
-        points = request.data.get("points")
+        points = int(request.data.get("points"))
         new_payer_total = payer.total_points + points
 
         # checks if payer has enough points
         if new_payer_total < 0:
-            text = "Not enough points. " + str(payer.name) + " only has " + str(payer.total_points) + " points available."
+            text = f"Not enough points. {payer.name} only has {payer.total_points} points available."
             return Response(text, status=status.HTTP_400_BAD_REQUEST)
 
         payer.total_points = new_payer_total
@@ -48,7 +61,7 @@ class SpendViewSet(viewsets.ModelViewSet):
 
         # checks to make sure we have enough spending power
         if spending > total_transaction_points:
-            text = "Not enough points. We only have " + str(total_transaction_points) + " available."
+            text = f"Not enough points. We only have {total_transaction_points} available."
             return Response(text, status=status.HTTP_400_BAD_REQUEST)
 
         for transaction in Transaction.objects.all().order_by("timestamp"):
@@ -59,13 +72,13 @@ class SpendViewSet(viewsets.ModelViewSet):
             }
 
             # checks if player already exists in receipt
-            if len(receipt) is not 0:
+            if len(receipt) != 0:
                 for item in receipt:
                     if item['payer'] == payer.name:
                         r = item
                         receipt.pop(receipt.index(item))
 
-            if transaction.remaining_points is not 0:
+            if transaction.remaining_points != 0:
                 if transaction.remaining_points <= spending:
                     r["points"] -= transaction.remaining_points
                     spending -= transaction.remaining_points
@@ -77,7 +90,9 @@ class SpendViewSet(viewsets.ModelViewSet):
                     transaction.remaining_points -= spending
                     spending = 0
 
-            receipt.append(r)
+            if r['points'] != 0:
+                receipt.append(r)
+
             transaction.save()
             payer.save()
 
@@ -86,7 +101,7 @@ class SpendViewSet(viewsets.ModelViewSet):
 
         # prevents positive values in receipt
         for item in receipt:
-            if item['points'] >= 0:
+            if item['points'] > 0 or item['points'] == 0:
                 receipt.pop(receipt.index(item))
 
         request.data["receipt"] = receipt
@@ -94,4 +109,6 @@ class SpendViewSet(viewsets.ModelViewSet):
         serializer.is_valid(raise_exception=True)
         self.perform_create(serializer)
         headers = self.get_success_headers(serializer.data)
-        return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)
+
+        # check this RETURNS RECEIPT
+        return Response(serializer.data['receipt'], status=status.HTTP_201_CREATED, headers=headers)
