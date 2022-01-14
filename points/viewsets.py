@@ -34,7 +34,7 @@ class TransactionViewSet(viewsets.ModelViewSet):
 
         # checks if payer has enough points
         if new_payer_total < 0:
-            text = "Not enough points. " + str(payer.name) + " only has " + str(payer.total_points) + " points available."
+            text = f"Not enough points. {payer.name} only has {payer.total_points} points available."
             return Response(text, status=status.HTTP_400_BAD_REQUEST)
 
         payer.total_points = new_payer_total
@@ -60,7 +60,7 @@ class SpendViewSet(viewsets.ModelViewSet):
 
         # checks to make sure we have enough spending power
         if spending > total_transaction_points:
-            text = "Not enough points. We only have " + str(total_transaction_points) + " available."
+            text = f"Not enough points. We only have {total_transaction_points} available."
             return Response(text, status=status.HTTP_400_BAD_REQUEST)
 
         for transaction in Transaction.objects.all().order_by("timestamp"):
