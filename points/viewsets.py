@@ -1,15 +1,13 @@
 from .models import Payer, Transaction, Spend
 from .serializers import PayerSerializer, TransactionSerializer, SpendSerializer
-from rest_framework import viewsets, status, filters
+from rest_framework import viewsets, status
 from rest_framework.response import Response
 
 
 class PayerViewSet(viewsets.ModelViewSet):
     queryset = Payer.objects.all()
     serializer_class = PayerSerializer
-
-    # POINTS BALANCE LIST (new model)?
-
+    
     def create(self, request, *args, **kwargs):
         if len(request.data) == 2:
             if request.data['total_points'] < 0:
@@ -110,5 +108,15 @@ class SpendViewSet(viewsets.ModelViewSet):
         self.perform_create(serializer)
         headers = self.get_success_headers(serializer.data)
 
-        # check this RETURNS RECEIPT
         return Response(serializer.data['receipt'], status=status.HTTP_201_CREATED, headers=headers)
+
+
+class BalanceViewSet(viewsets.ReadOnlyModelViewSet):
+    def list(self, request, *args, **kwargs):
+        balance = []
+        for payer in Payer.objects.all():
+            balance.append(payer.name)
+            balance.append(payer.total_points)
+        # turns list into a dictionary
+        balance_dict = {balance[i]: balance[i+1] for i in range(0, len(balance), 2)}
+        return Response(balance_dict)

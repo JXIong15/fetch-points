@@ -12,7 +12,6 @@ class PayerSerializer(serializers.ModelSerializer):
         ]
 
 
-
 class TransactionSerializer(serializers.ModelSerializer):
     class Meta:
         model = Transaction
