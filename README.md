@@ -16,7 +16,7 @@
 ## Description
 Users can add Payers and Transaction data for these payers. Points are spent based on Transaction Timestamp order, 
 meaning the oldest points are used first. No payer's points will ever be negative.
-* GitHub: https://github.com/JXIong15/fetch-points
+* **GitHub:** https://github.com/JXIong15/fetch-points
 <p><img src="https://i.imgur.com/oliYce0.png" width="100%"  stylealt="transactions ordered by oldest time stamp"/></p>
 
 
@@ -34,8 +34,9 @@ meaning the oldest points are used first. No payer's points will ever be negativ
 
 ## Functionality
 * For the purpose of this project, the environmental variables are given in `.env.EXAMPLE`. 
-Delete the `.EXAMPLE` part to use the `.env` file
-* To start the app locally, `cd` into the `backend` directory
+Delete the **.EXAMPLE** part to use the **.env** file
+
+* To start the app locally, *cd* into the `backend` directory
     * Make sure you're in an Environmental Variable by running `source env/bin/activate` in the terminal
     * Next, `cd` into the `project` directory and run `python manage.py runserver` to initiate the backend server
 * Go to the `frontend` folder and run `npm start` to initiate the ReactJS code
@@ -50,23 +51,23 @@ Delete the `.EXAMPLE` part to use the `.env` file
 
 ## Commands
 * In the virtual environment, run:
-  * server: `python manage.py runserver`
-  * tests: `python manage.py test`
-  * webclient requests: `python points/client.py`
+  * **Server**: `python manage.py runserver`
+  * **Tests**: `python manage.py test`
+  * **Webclient Requests**: `python points/client.py`
 
 
 ## Technologies Used
-* `Django` and `Django REST Framework`
-* `Postman` to test API routes: https://www.postman.com/downloads/
-* `environ` for secret keys
-* `requests` for Python web client
+* **Django** and **Django REST Framework**
+* **Postman** to test API routes: https://www.postman.com/downloads/
+* **environ** for secret keys
+* **requests** for Python web client
 
 
 ## Demo
-* Webclient Results:
+* **Webclient Results**:
 <p><img src="https://i.imgur.com/ht6eSnv.png" width="100%" height="100%" stylealt="webclient results"/></p>
 
-* Test Results:
+* **Test Results**:
 <p><img src="https://i.imgur.com/72YEB2F.png" width="100%" height="100%" stylealt="tests results"/></p>
 
 
