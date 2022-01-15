@@ -17,7 +17,7 @@
 Users can add Payers and Transaction data for these payers. Points are spent based on Transaction Timestamp order, 
 meaning the oldest points are used first. No payer's points will ever be negative.
 * GitHub: https://github.com/JXIong15/fetch-points
-<p align="center"><img src="https://i2.paste.pics/0627bfc06d87a429d8b7f3e89611e9c9.png" width="100%"  stylealt="inbox"/></p>
+<p><img src="https://i.imgur.com/oliYce0.png" width="100%"  stylealt="transactions ordered by oldest time stamp"/></p>
 
 
 ## Installations
@@ -64,7 +64,10 @@ Delete the `.EXAMPLE` part to use the `.env` file
 
 ## Demo
 * Webclient Results:
-<p align="center"><img src="https://i.imgur.com/ht6eSnv.png" width="100%" height="100%" stylealt="app demo"/></p>
+<p><img src="https://i.imgur.com/ht6eSnv.png" width="100%" height="100%" stylealt="webclient results"/></p>
+
+* Test Results:
+<p><img src="https://i.imgur.com/72YEB2F.png" width="100%" height="100%" stylealt="tests results"/></p>
 
 
 ## Future Ideas
