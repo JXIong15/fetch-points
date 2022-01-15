@@ -22,12 +22,12 @@ meaning the oldest points are used first. No payer's points will ever be negativ
 
 ## Installations
 * Clone this repo:
-  * HTTPS: https://github.com/JXIong15/fetch-points.git
-  * SSH: git@github.com:JXIong15/fetch-points.git
+  * **HTTPS:** https://github.com/JXIong15/fetch-points.git
+  * **SSH:** git@github.com:JXIong15/fetch-points.git
 * `cd` into the project and install in your command line:
-  * `python`: https://www.python.org/downloads/
-  * `pip`: should automatically be installed with python above
-  * `pipenv`: https://pipenv.pypa.io/en/latest/install/
+  * *python*: https://www.python.org/downloads/
+  * *pip*: should automatically be installed with python above
+  * *pipenv*: https://pipenv.pypa.io/en/latest/install/
     * run `pipenv install` to download provided packages to pipfile and project
     * run `pipenv shell` to enter the virtual environment
 
@@ -51,9 +51,9 @@ Delete the **.EXAMPLE** part to use the **.env** file
 
 ## Commands
 * In the virtual environment, run:
-  * **Server**: `python manage.py runserver`
-  * **Tests**: `python manage.py test`
-  * **Webclient Requests**: `python points/client.py`
+  * Server: `python manage.py runserver`
+  * Tests: `python manage.py test`
+  * Webclient Requests: `python points/client.py`
 
 
 ## Technologies Used
