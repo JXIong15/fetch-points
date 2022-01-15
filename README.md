@@ -22,7 +22,7 @@ meaning the oldest points are used first. No payer's points will ever be negativ
 
 
 ## Installations
-* Clone *this* repo:
+* Clone *this* repo in *command line*: `git clone ` and one of the links below
   * **HTTPS:** https://github.com/JXIong15/fetch-points.git
   * **SSH:** git@github.com:JXIong15/fetch-points.git
 * `cd` into the project and install in your command line:
@@ -36,20 +36,21 @@ meaning the oldest points are used first. No payer's points will ever be negativ
 ## Functionality
 * For the purpose of this project, the environmental variables are given in `.env.EXAMPLE`. 
 Delete the **.EXAMPLE** part to use the **.env** file
-
-ADD TO THISSSSSS
-
-* To start the app locally, *cd* into the `backend` directory
-    * Make sure you're in an Environmental Variable by running `source env/bin/activate` in the terminal
-    * Next, `cd` into the `project` directory and run `python manage.py runserver` to initiate the backend server
-* Go to the `frontend` folder and run `npm start` to initiate the ReactJS code
-* If the user is not logged in, they are promtped to. User can also create a login.
-* Once logged in, user is brought to their inbox containing any messages recieved
-* User can click on the left-hand navigation to bring them to various pages
-    * The Sent page displays all messages the user has sent
-    * The Compose page allows the user to create and send messages
-* Clicking on the message titles in Inbox and Sent allows the user to view the whole message
-* Individual messages can be deleted
+* It is recommended that you create your own superuser to access the <a href='http://localhost:8000/admin'>Django 
+Admin</a>: `python manage.py createsuperuser`
+* To start the app locally, run `python manage.py runserver` and go to `http://localhost:8000/`
+  * there is currently no Frontend, so you will just see the Django REST Framework built-in forms
+* Using **Postman** (or any similar application):
+  * GET *http://localhost:8000/balance/* : returns a list of the current payer balances
+  * GET *http://localhost:8000/payer/* : returns a list of the current payers
+  * GET *http://localhost:8000/transaction/* : returns a list of the transactions from oldest timestamp
+  * POST *http://localhost:8000/payer/* : data = `{'name'='NAME'}` will return the new payer's information
+  * POST *http://localhost:8000/transaction/* : data = `{'name'='NAME', 'points'=int, timestamp=time}` will add the 
+new points to the specified payer
+  * POST *http://localhost:8000/spend/* : data = `{'points'=int}` will return a receipt of which payer(s) spent points 
+and how many points each payer spent
+    * points are spent in order of oldest transaction timestamp
+  * DELETE *http://localhost:8000/payer/{payer_id}* : will delete the payer and all associated transactions to them
 
 
 ## Commands
