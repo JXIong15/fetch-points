@@ -78,6 +78,7 @@ and how many points each payer spent
 * In *tests*, get `object.create()` to work so that the code efficiently runs
   * right now it makes API calls to `post` new objects
 * Figure out how to connect Transaction and Payer models by Payer name rather than foreign key
+* Get Django forms and Django Admin to function properly when transactions are ran. Currently, calling the API routes is the only way transaction points are applied to payers.
 
 
 ## Sources
