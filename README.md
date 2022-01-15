@@ -36,10 +36,9 @@ meaning the oldest points are used first. No payer's points will ever be negativ
 ## Functionality
 * For the purpose of this project, the environmental variables are given in `.env.EXAMPLE`. 
 Delete the **.EXAMPLE** part to use the **.env** file
-* It is recommended that you create your own superuser to access the <a href='http://localhost:8000/admin'>Django 
-Admin</a>: `python manage.py createsuperuser`
-* To start the app locally, run `python manage.py runserver` and go to `http://localhost:8000/`
-  * there is currently no Frontend, so you will just see the Django REST Framework built-in forms
+* It is recommended that you create your own superuser to access the Django Admin: `python manage.py createsuperuser`
+* To start the app locally, run `python manage.py runserver` and go to `http://localhost:8000/admin`
+  * there is currently no Frontend, so you will just see the Django Admin panel with its built-in forms
 * Using **Postman** (or any similar application):
   * GET *http://localhost:8000/balance/* : returns a list of the current payer balances
   * GET *http://localhost:8000/payer/* : returns a list of the current payers
