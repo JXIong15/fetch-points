@@ -64,7 +64,7 @@ Delete the `.EXAMPLE` part to use the `.env` file
 
 ## Demo
 * Webclient Results:
-<p align="center"><img src="https://imgur.com/ht6eSnv" width="100%" height="100%" stylealt="app demo"/></p>
+<p align="center"><img src="https://i.imgur.com/ht6eSnv.png" width="100%" height="100%" stylealt="app demo"/></p>
 
 
 ## Future Ideas
