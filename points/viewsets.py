@@ -26,8 +26,9 @@ class TransactionViewSet(viewsets.ModelViewSet):
 
     # customize POST to add 'remaining_points' field
     def create(self, request, *args, **kwargs):
-        payer_id = request.data.get("payer")
-        payer = Payer.objects.get(id=payer_id)
+        name = request.data.get("payer")
+        payer = Payer.objects.get(name=name)
+        request.data["payer"] = payer.id
         points = int(request.data.get("points"))
         new_payer_total = payer.total_points + points
 

@@ -3,7 +3,7 @@ from datetime import datetime
 
 
 class Payer(models.Model):
-    name = models.CharField(max_length=255)
+    name = models.CharField(max_length=255, unique=True)
     total_points = models.IntegerField(default=0)
 
     def __str__(self):

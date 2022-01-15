@@ -26,7 +26,7 @@ class TestBalance(TestCase):
         client.post(f'{root}payer/', data=payer_data, format='json')
 
         transaction_data = {
-            "payer": payer.data['id'],
+            "payer": payer.data['name'],
             "points": 100,
             "timestamp": "2022-11-07T14:03:17Z"
         }
@@ -73,7 +73,7 @@ class TestTransaction(TestCase):
 
     def test_transaction_create(self):
         transaction_data = {
-            "payer": self.payer1.id,
+            "payer": self.payer1.name,
             "points": 100,
             "timestamp": "2022-11-07T14:03:17Z"
         }
@@ -90,7 +90,7 @@ class TestTransaction(TestCase):
 
     def test_transaction_delete_on_cascade_from_payer(self):
         transaction_data = {
-            "payer": self.payer1.id,
+            "payer": self.payer1.name,
             "points": 100,
             "timestamp": "2022-11-07T14:03:17Z"
         }
@@ -101,42 +101,42 @@ class TestTransaction(TestCase):
         self.assertEqual(len(Payer.objects.all()), 1)
 
     def test_multiple_transactions_create(self):
-        payer_id = self.payer1.id
+        name = self.payer1.name
         transaction_data = {
-            "payer": payer_id,
+            "payer": name,
             "points": 100,
             "timestamp": "2022-11-07T14:03:17Z"
         }
         client.post(f'{root}transaction/', data=transaction_data, format='json')
         transaction_data = {
-            "payer": payer_id,
+            "payer": name,
             "points": 100,
             "timestamp": "2022-11-07T15:03:17Z"
         }
         client.post(f'{root}transaction/', data=transaction_data, format='json')
         self.assertEqual(len(Transaction.objects.all()), 2)
-        self.assertEqual(Payer.objects.get(id=payer_id).total_points, 200)
+        self.assertEqual(Payer.objects.get(name=name).total_points, 200)
 
         # tests a negative transaction
         transaction_data = {
-            "payer": payer_id,
+            "payer": name,
             "points": -100,
             "timestamp": "2022-11-07T15:03:17Z"
         }
         client.post(f'{root}transaction/', data=transaction_data, format='json')
         self.assertEqual(len(Transaction.objects.all()), 3)
-        self.assertEqual(Payer.objects.get(id=payer_id).total_points, 100)
+        self.assertEqual(Payer.objects.get(name=name).total_points, 100)
 
     def test_negative_transaction(self):
-        payer_id = self.payer1.id
+        name = self.payer1.name
         transaction_data = {
-            "payer": payer_id,
+            "payer": name,
             "points": -100,
             "timestamp": "2022-11-07T15:03:17Z"
         }
         resp = client.post(f'{root}transaction/', data=transaction_data, format='json')
         self.assertEqual(resp.status_code, 400)
-        payer = Payer.objects.get(id=payer_id)
+        payer = Payer.objects.get(name=name)
         text = f"Not enough points. {payer.name} only has {payer.total_points} points available."
         self.assertEqual(resp.data, text)
         self.assertEqual(payer.total_points, 0)
@@ -148,7 +148,7 @@ class TestSpend(TestCase):
         self.payer2 = client.post(f'{root}payer/', data={"name": "Misty"}, format='json')
 
         transaction_data = {
-            "payer": self.payer1.data['id'],
+            "payer": self.payer1.data['name'],
             "points": 100,
             "timestamp": "2022-11-07T14:03:17Z"
         }
@@ -169,7 +169,7 @@ class TestSpend(TestCase):
 
     def test_spend_oldest_points_first(self):
         transaction_data = {
-            "payer": self.payer2.data['id'],
+            "payer": self.payer2.data['name'],
             "points": 50,
             "timestamp": "2022-10-07T14:03:17Z"
         }
@@ -193,19 +193,19 @@ class TestSpend(TestCase):
 
     def test_multiple_transactions_spent(self):
         transaction_data = {
-            "payer": self.payer2.data['id'],
+            "payer": self.payer2.data['name'],
             "points": 25,
             "timestamp": "2022-09-07T14:03:17Z"
         }
         client.post(f'{root}transaction/', data=transaction_data, format='json')
         transaction_data = {
-            "payer": self.payer2.data['id'],
+            "payer": self.payer2.data['name'],
             "points": -20,
             "timestamp": "2022-10-07T14:03:17Z"
         }
         client.post(f'{root}transaction/', data=transaction_data, format='json')
         transaction_data = {
-            "payer": self.payer1.data['id'],
+            "payer": self.payer1.data['name'],
             "points": 5,
             "timestamp": "2022-09-17T14:03:17Z"
         }
@@ -228,7 +228,7 @@ class TestSpend(TestCase):
             {'payer': 'Misty', 'points': -5},
             {'payer': 'Ash', 'points': -70}
         ])
-        payer1 = Payer.objects.get(id=self.payer1.data['id'])
-        payer2 = Payer.objects.get(id=self.payer2.data['id'])
+        payer1 = Payer.objects.get(name=self.payer1.data['name'])
+        payer2 = Payer.objects.get(name=self.payer2.data['name'])
         self.assertEqual(payer1.total_points, 35)
         self.assertEqual(payer2.total_points, 0)
