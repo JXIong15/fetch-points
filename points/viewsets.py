@@ -9,6 +9,9 @@ class PayerViewSet(viewsets.ModelViewSet):
     serializer_class = PayerSerializer
     
     def create(self, request, *args, **kwargs):
+        name = request.data.get("name")
+        request.data["name"] = name.upper()
+
         if len(request.data) == 2:
             if request.data['total_points'] < 0:
                 return Response("Payer Points cannot be negative.", status=status.HTTP_400_BAD_REQUEST)
@@ -27,6 +30,7 @@ class TransactionViewSet(viewsets.ModelViewSet):
     # customize POST to add 'remaining_points' field
     def create(self, request, *args, **kwargs):
         name = request.data.get("payer")
+        name = name.upper()
         payer = Payer.objects.get(name=name)
         request.data["payer"] = payer.id
         points = int(request.data.get("points"))
