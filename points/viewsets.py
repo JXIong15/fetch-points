@@ -9,18 +9,24 @@ class PayerViewSet(viewsets.ModelViewSet):
     serializer_class = PayerSerializer
     
     def create(self, request, *args, **kwargs):
-        name = request.data.get("name")
-        request.data["name"] = name.upper()
-
         if len(request.data) == 2:
             if request.data['total_points'] < 0:
                 return Response("Payer Points cannot be negative.", status=status.HTTP_400_BAD_REQUEST)
+
+        # check for repeat names
+        names = list(self.queryset.all().values_list('name', flat=True))
+        if request.data['name'].upper() in names:
+            return Response(f"{request.data['name'].upper()} name already exists. Choose a different name.", status=status.HTTP_400_BAD_REQUEST)
 
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         self.perform_create(serializer)
         headers = self.get_success_headers(serializer.data)
         return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)
+
+    def perform_create(self, serializer):
+        name = self.request.data['name'].upper()
+        serializer.save(name=name)
 
 
 class TransactionViewSet(viewsets.ModelViewSet):

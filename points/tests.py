@@ -13,16 +13,16 @@ class TestBalance(TestCase):
         self.assertEqual(resp.data, {})
 
     def test_with_payers(self):
-        Payer.objects.create(name='Ash', total_points=100)
-        Payer.objects.create(name='Misty')
+        Payer.objects.create(name='ASH', total_points=100)
+        Payer.objects.create(name='MISTY')
         resp = client.get(f'{root}balance/')
         self.assertEqual(resp.status_code, 200)
-        self.assertEqual(resp.data, {'Ash': 100, 'Misty': 0})
+        self.assertEqual(resp.data, {'ASH': 100, 'MISTY': 0})
 
     def test_after_spend(self):
-        payer_data = {"name": "Ash"}
+        payer_data = {"name": "ASH"}
         payer = client.post(f'{root}payer/', data=payer_data, format='json')
-        payer_data = {"name": "Misty"}
+        payer_data = {"name": "MISTY"}
         client.post(f'{root}payer/', data=payer_data, format='json')
 
         transaction_data = {
@@ -37,7 +37,7 @@ class TestBalance(TestCase):
 
         resp = client.get(f'{root}balance/')
         self.assertEqual(resp.status_code, 200)
-        self.assertEqual(resp.data, {'Ash': 80, 'Misty': 0})
+        self.assertEqual(resp.data, {'ASH': 80, 'MISTY': 0})
 
 
 class TestPayerCreate(TestCase):
@@ -45,22 +45,40 @@ class TestPayerCreate(TestCase):
         payer_data = {"name": "Ash"}
         resp = client.post(f'{root}payer/', data=payer_data)
         self.assertEqual(resp.status_code, 201)
-        self.assertEqual(resp.data['name'], 'Ash')
+        self.assertEqual(resp.data['name'], 'ASH')
         self.assertEqual(resp.data['total_points'], 0)
+
+    def test_upper_case_name(self):
+        payer_data = {"name": "Ash"}
+        resp = client.post(f'{root}payer/', data=payer_data)
+        self.assertEqual(resp.status_code, 201)
+        self.assertEqual(resp.data['name'], 'ASH')
+
+        payer_data = {"name": "misty"}
+        resp = client.post(f'{root}payer/', data=payer_data)
+        self.assertEqual(resp.status_code, 201)
+        self.assertEqual(resp.data['name'], 'MISTY')
+
+    def test_unique_name(self):
+        payer_data = {"name": "MISTY"}
+        client.post(f'{root}payer/', data=payer_data, format='json')
+        resp = client.post(f'{root}payer/', data={'name': 'misty'}, format='json')
+        self.assertEqual(resp.status_code, 400)
+        self.assertEqual(resp.data, "MISTY name already exists. Choose a different name.")
 
     def test_positive_points(self):
         # tests for if an admin user wants to input positive points when creating a user
         # (not preferred because it won't be accounted for in Transactions)
-        payer_data = {"name": "Brock", "total_points": 100}
+        payer_data = {"name": "BROCK", "total_points": 100}
         resp = client.post(f'{root}payer/', data=payer_data, format='json')
         self.assertEqual(resp.status_code, 201)
-        self.assertEqual(resp.data['name'], 'Brock')
+        self.assertEqual(resp.data['name'], 'BROCK')
         self.assertEqual(resp.data['total_points'], 100)
 
     def test_negative_points(self):
         # tests for if an admin user wants to input negative points when creating a user
         # (negative values are not allowed)
-        payer_data = {"name": "Misty", "total_points": -100}
+        payer_data = {"name": "MISTY", "total_points": -100}
         resp = client.post(f'{root}payer/', data=payer_data, format='json')
         self.assertEqual(resp.status_code, 400)
         self.assertEqual(resp.data, 'Payer Points cannot be negative.')
@@ -68,8 +86,8 @@ class TestPayerCreate(TestCase):
 
 class TestTransaction(TestCase):
     def setUp(self):
-        self.payer1 = Payer.objects.create(name='Ash')
-        self.payer2 = Payer.objects.create(name='Misty')
+        self.payer1 = Payer.objects.create(name='ASH')
+        self.payer2 = Payer.objects.create(name='MISTY')
 
     def test_transaction_create(self):
         transaction_data = {
@@ -158,7 +176,7 @@ class TestSpend(TestCase):
         spend_data = {"points": 20}
         resp = client.post(f'{root}spend/', data=spend_data, format='json')
         self.assertEqual(resp.status_code, 201)
-        self.assertEqual(resp.data, [{'payer': 'Ash', 'points': -20}])
+        self.assertEqual(resp.data, [{'payer': 'ASH', 'points': -20}])
 
     def test_not_enough_spend(self):
         spend_data = {"points": 200}
@@ -183,8 +201,8 @@ class TestSpend(TestCase):
         resp = client.post(f'{root}spend/', data=spend_data, format='json')
         self.assertEqual(resp.status_code, 201)
         self.assertEqual(resp.data, [
-            {'payer': 'Misty', 'points': -50},
-            {'payer': 'Ash', 'points': -25}
+            {'payer': 'MISTY', 'points': -50},
+            {'payer': 'ASH', 'points': -25}
         ])
         payer1 = Payer.objects.get(id=self.payer1.data['id'])
         payer2 = Payer.objects.get(id=self.payer2.data['id'])
@@ -212,21 +230,21 @@ class TestSpend(TestCase):
         client.post(f'{root}transaction/', data=transaction_data, format='json')
         client.get(f'{root}transaction/', format='json')
 
-        # At this point: {Misty: 5, Ash: 105}
+        # At this point: {MISTY: 5, ASH: 105}
         spend_data = {"points": 75}
         resp = client.post(f'{root}spend/', data=spend_data, format='json')
-        # Based on Transaction order, Misty's first transaction of 25 will be spent
-        # {Misty: -20, Ash: 105, Spend: 50}
-        # Next, Ash's 5 will be spent: {Misty: -20, Ash: 100, Spend: 45}
-        # Misty's -20 transaction is next, meaning she and the spending power increase by 20,
-        # which leaves her total_points at 0: {Misty: 0, Ash: 100, Spend: 65}
-        # Finally, the remainder is partially pulled from Ash's initial 100 transaction in the setup
-        # {Misty: 0, Ash: 35, Spend: 0}
-        # From a Spend of 75, the Receipt: {Misty: -5, Ash: -70}
+        # Based on Transaction order, MISTY's first transaction of 25 will be spent
+        # {ASH: -20, ASH: 105, Spend: 50}
+        # Next, ASH's 5 will be spent: {MISTY: -20, ASH: 100, Spend: 45}
+        # MISTY's -20 transaction is next, meaning she and the spending power increase by 20,
+        # which leaves her total_points at 0: {MISTY: 0, ASH: 100, Spend: 65}
+        # Finally, the remainder is partially pulled from ASH's initial 100 transaction in the setup
+        # {MISTY: 0, ASH: 35, Spend: 0}
+        # From a Spend of 75, the Receipt: {MISTY: -5, ASH: -70}
         self.assertEqual(resp.status_code, 201)
         self.assertEqual(resp.data, [
-            {'payer': 'Misty', 'points': -5},
-            {'payer': 'Ash', 'points': -70}
+            {'payer': 'MISTY', 'points': -5},
+            {'payer': 'ASH', 'points': -70}
         ])
         payer1 = Payer.objects.get(name=self.payer1.data['name'])
         payer2 = Payer.objects.get(name=self.payer2.data['name'])
