@@ -18,10 +18,11 @@ Users can add Payers and Transaction data for these payers. Points are spent bas
 meaning the oldest points are used first. No payer's points will ever be negative.
 * **GitHub:** https://github.com/JXIong15/fetch-points
 <p><img src="https://i.imgur.com/oliYce0.png" width="100%"  stylealt="transactions ordered by oldest time stamp"/></p>
+<p align="center">(Transactions are in order of TIMESTAMP instead of the order received (ID)</p>
 
 
 ## Installations
-* Clone this repo:
+* Clone *this* repo:
   * **HTTPS:** https://github.com/JXIong15/fetch-points.git
   * **SSH:** git@github.com:JXIong15/fetch-points.git
 * `cd` into the project and install in your command line:
@@ -35,6 +36,8 @@ meaning the oldest points are used first. No payer's points will ever be negativ
 ## Functionality
 * For the purpose of this project, the environmental variables are given in `.env.EXAMPLE`. 
 Delete the **.EXAMPLE** part to use the **.env** file
+
+ADD TO THISSSSSS
 
 * To start the app locally, *cd* into the `backend` directory
     * Make sure you're in an Environmental Variable by running `source env/bin/activate` in the terminal
@@ -50,7 +53,7 @@ Delete the **.EXAMPLE** part to use the **.env** file
 
 
 ## Commands
-* In the virtual environment, run:
+* In the *virtual environment*, run:
   * Server: `python manage.py runserver`
   * Tests: `python manage.py test`
   * Webclient Requests: `python points/client.py`
@@ -63,7 +66,7 @@ Delete the **.EXAMPLE** part to use the **.env** file
 * **requests** for Python web client
 
 
-## Demo
+## Results
 * **Webclient Results**:
 <p><img src="https://i.imgur.com/ht6eSnv.png" width="100%" height="100%" stylealt="webclient results"/></p>
 
@@ -72,7 +75,7 @@ Delete the **.EXAMPLE** part to use the **.env** file
 
 
 ## Future Ideas
-* In `tests`, get `object.create()` to work so that the code efficiently runs
+* In *tests*, get `object.create()` to work so that the code efficiently runs
   * right now it makes API calls to `post` new objects
 * Figure out how to connect Transaction and Payer models by Payer name rather than foreign key
 

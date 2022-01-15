@@ -13,6 +13,11 @@ class PayerViewSet(viewsets.ModelViewSet):
             if request.data['total_points'] < 0:
                 return Response("Payer Points cannot be negative.", status=status.HTTP_400_BAD_REQUEST)
 
+        # check for repeat names
+        names = list(self.queryset.all().values_list('name', flat=True))
+        if request.data['name'].upper() in names:
+            return Response(f"{request.data['name'].upper()} name already exists. Choose a different name.", status=status.HTTP_400_BAD_REQUEST)
+
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         self.perform_create(serializer)

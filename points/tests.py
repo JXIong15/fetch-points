@@ -59,6 +59,13 @@ class TestPayerCreate(TestCase):
         self.assertEqual(resp.status_code, 201)
         self.assertEqual(resp.data['name'], 'MISTY')
 
+    def test_unique_name(self):
+        payer_data = {"name": "MISTY"}
+        client.post(f'{root}payer/', data=payer_data, format='json')
+        resp = client.post(f'{root}payer/', data={'name': 'misty'}, format='json')
+        self.assertEqual(resp.status_code, 400)
+        self.assertEqual(resp.data, "MISTY name already exists. Choose a different name.")
+
     def test_positive_points(self):
         # tests for if an admin user wants to input positive points when creating a user
         # (not preferred because it won't be accounted for in Transactions)
