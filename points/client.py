@@ -12,11 +12,11 @@ print(f'Balance of empty database:\n{r.text}\n')
 
 # add our payers to the DB
 data = {'name': "DANNON"}
-requests.post(payer_url, json=data)
+a = requests.post(payer_url, json=data)
 data = {'name': "UNILEVER"}
-requests.post(payer_url, json=data)
+b = requests.post(payer_url, json=data)
 data = {'name': "MILLER COORS"}
-requests.post(payer_url, json=data)
+c = requests.post(payer_url, json=data)
 r = requests.get(payer_url)
 print(f'All Payers:\n{r.text}\n')
 
@@ -44,11 +44,19 @@ print(f'Balance of payers after all transactions are run:\n{r.text}\n')
 
 # spend some points
 data = {'points': 5000}
-r = requests.post(spend_url, json=data)
-print(f'Spend post result:\n{r.text}\n')
+s = requests.post(spend_url, json=data)
+print(f'Spend post result:\n{s.text}\n')
 
 
 # balance of payers after spend
 r = requests.get(balance_url)
 print('Current Balance after Spend request:')
 print(r.text)
+
+
+# clear DB
+requests.delete(f'{payer_url}{a.json()["id"]}/')
+requests.delete(f'{payer_url}{b.json()["id"]}/')
+requests.delete(f'{payer_url}{c.json()["id"]}/')
+s = requests.get(spend_url)
+requests.delete(f'{spend_url}{s.json()[0]["id"]}/')
