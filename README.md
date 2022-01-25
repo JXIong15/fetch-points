@@ -89,4 +89,4 @@ and how many points each payer spent
 ## License
 Licensed under the [MIT License](LICENSE).
 
-<p align="center">© 2021 Jou Xiong</p>
+<p align="center">© 2022 Jou Xiong</p>
