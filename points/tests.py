@@ -139,10 +139,13 @@ class TestTransaction(TestCase):
         transaction_data = {
             "payer": name,
             "points": -100,
-            "timestamp": "2022-11-07T15:03:17Z"
+            "timestamp": "2022-11-07T16:03:17Z"
         }
         client.post(f'{root}transaction/', data=transaction_data, format='json')
         self.assertEqual(len(Transaction.objects.all()), 3)
+        self.assertEqual(Transaction.objects.get(id=1).remaining_points, 0)
+        self.assertEqual(Transaction.objects.get(id=2).remaining_points, 100)
+        self.assertEqual(Transaction.objects.get(id=3).remaining_points, 0)
         self.assertEqual(Payer.objects.get(name=name).total_points, 100)
 
     def test_negative_transaction(self):

@@ -47,6 +47,22 @@ class TransactionViewSet(viewsets.ModelViewSet):
             text = f"Not enough points. {payer.name} only has {payer.total_points} points available."
             return Response(text, status=status.HTTP_400_BAD_REQUEST)
 
+        # deducts negative transactions from payer balances and previous positive transactions
+        if points < 0:
+            qs = Transaction.objects.filter(payer=payer.id).order_by("timestamp")
+            points = points * -1
+            for t in qs:
+                if t.remaining_points != 0:
+                    if t.remaining_points < points:
+                        points -= t.remaining_points
+                        payer.total_points -= t.remaining_points
+                        t.remaining_points = 0
+                    else:
+                        t.remaining_points -= points
+                        payer.total_points -= points
+                        points = 0
+                t.save()
+
         payer.total_points = new_payer_total
         payer.save()
 
@@ -107,11 +123,6 @@ class SpendViewSet(viewsets.ModelViewSet):
 
             if spending == 0:
                 break
-
-        # prevents positive values in receipt
-        for item in receipt:
-            if item['points'] > 0 or item['points'] == 0:
-                receipt.pop(receipt.index(item))
 
         request.data["receipt"] = receipt
         serializer = self.get_serializer(data=request.data)
